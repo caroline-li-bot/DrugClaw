@@ -1,0 +1,83 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+PYMANIFEST
+
+# Virtual environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Data files
+*.csv
+*.xlsx
+*.xls
+*.sdf
+*.mol
+*.pdb
+*.pdbqt
+*.mol2
+*.smi
+*.txt
+*.md
+!README.md
+!LICENSE
+!*.md
+!.gitignore
+!skill.yaml
+!requirements.txt
+
+# Models
+models/
+*.pth
+*.pt
+*.bin
+
+# Logs
+logs/
+*.log
+logging/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+.vercel

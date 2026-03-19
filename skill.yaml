@@ -1,0 +1,197 @@
+name: openclaw-drug
+version: 0.1.0
+description: 药物研发自动化助手，覆盖从靶点发现到临床试验设计的全流程自动化
+author: OpenClaw Team
+homepage: https://github.com/openclaw/openclaw-drug
+license: MIT
+
+tags:
+  - drug-discovery
+  - cheminformatics
+  - virtual-screening
+  - admet
+  - literature-analysis
+
+dependencies:
+  python: >=3.9
+  pip:
+    - rdkit>=2023.9.5
+    - pandas>=2.2.1
+    - numpy>=1.26.4
+    - scikit-learn>=1.4.1.post1
+    - torch>=2.2.1
+    - transformers>=4.38.2
+    - biopython>=1.83
+    - pubchempy>=1.0.4
+    - requests>=2.31.0
+    - beautifulsoup4>=4.12.3
+    - plotly>=5.20.0
+    - scipy>=1.12.0
+    - tqdm>=4.66.2
+    - pyyaml>=6.0.1
+    - pydantic>=2.6.4
+
+system_dependencies:
+  - autodock-vina
+  - mgltools
+  - pymol
+
+commands:
+  literature-analyze:
+    description: 文献分析，自动搜索和分析学术文献
+    parameters:
+      keyword:
+        type: string
+        description: 搜索关键词
+        required: true
+      output:
+        type: string
+        description: 输出报告路径
+        default: literature_report.md
+      max-papers:
+        type: integer
+        description: 最大文献数量
+        default: 50
+      days:
+        type: integer
+        description: 搜索最近多少天的文献
+        default: 365
+    executable: python skills/literature_analysis.py
+
+  virtual-screening:
+    description: 虚拟筛选，自动化分子对接和化合物筛选
+    parameters:
+      target-pdb:
+        type: string
+        description: 靶点PDB文件路径
+        required: true
+      library-file:
+        type: string
+        description: 化合物库文件路径（CSV格式，包含smiles列）
+        required: true
+      center-x:
+        type: float
+        description: 结合位点中心X坐标
+        required: true
+      center-y:
+        type: float
+        description: 结合位点中心Y坐标
+        required: true
+      center-z:
+        type: float
+        description: 结合位点中心Z坐标
+        required: true
+      size-x:
+        type: float
+        description: 结合位点盒子X方向大小
+        default: 20.0
+      size-y:
+        type: float
+        description: 结合位点盒子Y方向大小
+        default: 20.0
+      size-z:
+        type: float
+        description: 结合位点盒子Z方向大小
+        default: 20.0
+      output:
+        type: string
+        description: 结果输出路径
+        default: screening_results.csv
+      top-n:
+        type: integer
+        description: 返回Top N候选化合物
+        default: 20
+    executable: python skills/virtual_screening.py
+
+  admet-predict:
+    description: ADMET性质预测，预测化合物的吸收、分布、代谢、排泄和毒性
+    parameters:
+      smiles:
+        type: string
+        description: 单个SMILES字符串（单模式）
+      input:
+        type: string
+        description: 包含smiles列的CSV文件（批量模式）
+      output:
+        type: string
+        description: 输出文件路径
+        default: admet_results.csv
+    executable: python skills/admet_prediction.py
+
+  experiment-design:
+    description: 实验方案智能设计
+    parameters:
+      type:
+        type: string
+        description: 实验类型（cell-viability/animal/kinase）
+        required: true
+      compound:
+        type: string
+        description: 化合物名称或SMILES
+        required: true
+      target:
+        type: string
+        description: 靶点名称
+      output:
+        type: string
+        description: 输出协议路径
+        default: experiment_protocol.md
+    executable: python skills/experiment_design.py
+
+  data-analysis:
+    description: 实验数据自动分析
+    parameters:
+      input:
+        type: string
+        description: 实验数据文件路径
+        required: true
+      type:
+        type: string
+        description: 数据类型（excel/csv/elisa/flow-cytometry）
+        required: true
+      output:
+        type: string
+        description: 分析报告路径
+        default: data_analysis_report.md
+    executable: python skills/data_analysis.py
+
+configuration:
+  pubmed_email:
+    type: string
+    description: PubMed API访问邮箱
+    default: your@email.com
+  vina_path:
+    type: string
+    description: AutoDock Vina可执行文件路径
+    default: vina
+  mgltools_path:
+    type: string
+    description: MGLTools路径
+    default: /usr/local/mgltools
+  model_cache_dir:
+    type: string
+    description: AI模型缓存目录
+    default: ~/.cache/openclaw-drug/models
+
+examples:
+  - description: 分析EGFR抑制剂相关文献
+    command: openclaw drug literature-analyze --keyword "EGFR inhibitor" --max-papers 100 --days 180
+
+  - description: 对EGFR靶点进行虚拟筛选
+    command: openclaw drug virtual-screening --target-pdb 1M17.pdb --library-file zinc_library.csv --center-x 10.0 --center-y 20.0 --center-z 30.0
+
+  - description: 预测单个化合物的ADMET性质
+    command: openclaw drug admet-predict --smiles "C1=CC(=C(C=C1Cl)Cl)O"
+
+  - description: 批量预测化合物库的ADMET性质
+    command: openclaw drug admet-predict --input compounds.csv --output admet_results.csv
+
+categories:
+  - 文献分析
+  - 虚拟筛选
+  - ADMET预测
+  - 实验设计
+  - 数据分析
+
+repository: https://github.com/openclaw/openclaw-drug
+issues: https://github.com/openclaw/openclaw-drug/issues

@@ -1,0 +1,47 @@
+# A string used to distinguish different Supabase projects.
+project_id = "jdsleruuwyinnkbzysyu"
+
+# The port to use for the API when running locally.
+api_port = 54321
+
+# The port to use for the Studio UI when running locally.
+studio_port = 54323
+
+# The port to use for the database when running locally.
+db_port = 54322
+
+# The JWT secret used to sign tokens. Change this for production.
+jwt_secret = "super-secret-jwt-token-with-at-least-32-characters-long"
+
+# The anonymous API key, must match what's in your database.
+anon_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0"
+
+# The service role API key, must match what's in your database.
+service_role_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU"
+
+# Additional CORS origins to allow requests from.
+additional_origins = ["https://*.vercel.app"]
+
+# Enable / disable emails.
+[auth]
+enable_signup = false
+enable_confirmations = false
+site_url = "https://openclaw-drug.vercel.app"
+
+# Email templates.
+[auth.email]
+invite = "https://cdn.jsdelivr.net/npm/supabase-mailer@0.0.2/templates/invite.html"
+confirmation = "https://cdn.jsdelivr.net/npm/supabase-mailer@0.0.2/templates/confirmation.html"
+recovery = "https://cdn.jsdelivr.net/npm/supabase-mailer@0.0.2/templates/recovery.html"
+magic_link = "https://cdn.jsdelivr.net/npm/supabase-mailer@0.0.2/templates/magic_link.html"
+email_change = "https://cdn.jsdelivr.net/npm/supabase-mailer@0.0.2/templates/email_change.html"
+
+# Storage configuration.
+[storage]
+file_size_limit = "100MB"
+allowed_mime_types = ["image/*", "text/csv", "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "chemical/x-pdb", "chemical/x-sdf", "chemical/x-smiles"]
+
+[storage.buckets.public]
+public = true
+allowed_mime_types = ["image/*", "text/*", "application/*", "chemical/*"]
+file_size_limit = "100MB"
