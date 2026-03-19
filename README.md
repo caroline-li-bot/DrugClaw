@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="support/DrugClaw_Logo.png" alt="DrugClaw Logo" width="600"/>
+  <img src="https://raw.githubusercontent.com/caroline-li-bot/DrugClaw/main/support/DrugClaw_Logo.png" alt="DrugClaw Logo" width="600"/>
 </p>
 
 <h1 align="center">DrugClaw</h1>
@@ -11,15 +11,15 @@
 <p align="center">
   <a href="https://github.com/caroline-li-bot/DrugClaw/blob/main/LICENSE"><img src="https://img.shields.io/github/license/caroline-li-bot/DrugClaw.svg" alt="License"></a>
   <a href="https://pypi.org/project/drugclaw/"><img src="https://img.shields.io/pypi/v/drugclaw.svg" alt="PyPI"></a>
-  <a href="https://pepy.tech/project/drugclaw"><img src="https://img.shields.io/badge/domain-drug%20discovery-blue.svg" alt="Domain"></a>
+  <a href="https://img.shields.io/badge/domain-drug%20discovery-blue.svg"><img src="https://img.shields.io/badge/domain-drug%20discovery-blue.svg" alt="Domain"></a>
   <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code Style"></a>
 </p>
 
 <p align="center">
-  <a href="/README_CN.md">中文 README</a> | 
+  <a href="https://github.com/caroline-li-bot/DrugClaw/blob/main/README_CN.md">中文 README</a> | 
   <a href="https://drug.openclaw.ai">Live Demo</a> |
-  <a href="#quick-start">Quick Start</a> |
-  <a href="#-skill-tree">Skill Tree</a>
+  <a href="https://github.com/caroline-li-bot/DrugClaw#quick-start">Quick Start</a> |
+  <a href="https://github.com/caroline-li-bot/DrugClaw#-skill-tree">Skill Tree</a>
 </p>
 
 ---
@@ -142,7 +142,7 @@ pip install -e .
 openclaw skill install .
 ```
 
-See [DEPLOYMENT.md](/DEPLOYMENT.md) for more deployment options.
+See [DEPLOYMENT.md](https://github.com/caroline-li-bot/DrugClaw/blob/main/DEPLOYMENT.md) for more deployment options.
 
 ## 🚀 Quick Start
 
@@ -188,7 +188,7 @@ Find all known targets of imatinib and summarize potential adverse interactions
 
 ## ☁️ Web Deployment
 
-DrugClaw can be deployed to Vercel with Supabase backend. See [DEPLOYMENT_VERCEL_SUPABASE.md](/DEPLOYMENT_VERCEL_SUPABASE.md) for step-by-step instructions.
+DrugClaw can be deployed to Vercel with Supabase backend. See [DEPLOYMENT_VERCEL_SUPABASE.md](https://github.com/caroline-li-bot/DrugClaw/blob/main/DEPLOYMENT_VERCEL_SUPABASE.md) for step-by-step instructions.
 
 ## 📁 Project Structure
 
