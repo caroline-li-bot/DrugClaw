@@ -95,7 +95,7 @@ class PlannerAgent:
     ]
     
     TARGET_PATTERNS = [
-        r'\b(EGFR|HER2|VEGF|BRAF|KRAS|ALK|PDGFR|ABL|BCR-ABL|PI3K|AKT|mTOR)\b',
+        r'\b(EGFR|HER2|VEGF|BRAF|KRAS|ALK|PDGFR|ABL|BCR-ABL|PI3K|AKT|mTOR|TREM2)\b',
         r'\b\w+ kinase\b', r'\breceptor\b'
     ]
     
@@ -145,6 +145,17 @@ class PlannerAgent:
                     if category not in selected_categories:
                         selected_categories.append(category)
                     break
+        
+        # Auto-select categories based on entity types
+        # If we have target entities, add dti category
+        if any(et == 'target' for et in entity_types.values()) and 'dti' not in selected_categories:
+            selected_categories.append('dti')
+        # If we have drug entities, add knowledgebase category
+        if any(et == 'drug' for et in entity_types.values()) and 'knowledgebase' not in selected_categories:
+            selected_categories.append('knowledgebase')
+        # If we have disease entities, add disease category (already added if keyword matched)
+        if any(et == 'disease' for et in entity_types.values()) and 'disease' not in selected_categories:
+            selected_categories.append('disease')
         
         # Default to knowledgebase if no category matched
         if not selected_categories:

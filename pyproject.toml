@@ -51,6 +51,9 @@ dependencies = [
 [project.scripts]
 drugclaw = "drugclaw.cli:main"
 
+[tool.setuptools]
+packages = ["drugclaw", "drugclaw.agent", "drugclaw.kg", "drugclaw.rag", "drugclaw.virtual_screening"]
+
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"

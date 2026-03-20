@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/caroline-li-bot/DrugClaw/main/support/DrugClaw_Logo.png" alt="DrugClaw Logo" width="600"/>
+  <img src="https://raw.githubusercontent.com/caroline-li-bot/DrugClaw/main/support/DrugClaw_Logo.jpg" alt="DrugClaw Logo" width="600"/>
 </p>
 
 <h1 align="center">DrugClaw</h1>

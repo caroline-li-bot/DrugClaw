@@ -14,12 +14,11 @@ import re
 import logging
 from pathlib import Path
 
-from langchain.document_loaders import PyPDFLoader, TextLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
-from langchain.chains import RetrievalQA
-from langchain.llms import OpenAI
+from langchain_community.document_loaders import PyPDFLoader, TextLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
+from openai import OpenAI as OpenAIClient
 
 logger = logging.getLogger(__name__)
 
@@ -50,35 +49,44 @@ class LiteratureRAG:
         """
         self.db_path = db_path
         self.embedding_model = embedding_model
+        self.openai_model = openai_model
+        self.openai_base_url = openai_base_url
+        self.openai_api_key = openai_api_key
         
-        # Initialize embeddings
-        self.embeddings = HuggingFaceEmbeddings(
-            model_name=embedding_model,
-            model_kwargs={'device': 'cpu'}
-        )
+        # Lazy initialization - only load when actually needed
+        self.embeddings = None
+        self.vector_store = None
+        self.client = None
         
-        # Initialize or load vector store
-        if os.path.exists(db_path) and len(os.listdir(db_path)) > 0:
-            self.vector_store = Chroma(
-                persist_directory=db_path,
-                embedding_function=self.embeddings
-            )
-        else:
-            self.vector_store = Chroma(
-                persist_directory=db_path,
-                embedding_function=self.embeddings
-            )
-        
-        # Initialize LLM if API key available
+        # OpenAI client can be initialized immediately
         if openai_api_key:
-            self.llm = OpenAI(
+            self.client = OpenAIClient(
                 api_key=openai_api_key,
-                base_url=openai_base_url,
-                model_name=openai_model,
-                temperature=0
+                base_url=openai_base_url
             )
-        else:
-            self.llm = None
+    
+    def _ensure_initialized(self):
+        """Ensure embeddings and vector store are initialized"""
+        from langchain_community.embeddings import HuggingFaceEmbeddings
+        from langchain_community.vectorstores import Chroma
+        
+        if self.embeddings is None:
+            self.embeddings = HuggingFaceEmbeddings(
+                model_name=self.embedding_model,
+                model_kwargs={'device': 'cpu'}
+            )
+        
+        if self.vector_store is None:
+            if os.path.exists(self.db_path) and os.listdir(self.db_path):
+                self.vector_store = Chroma(
+                    persist_directory=self.db_path,
+                    embedding_function=self.embeddings
+                )
+            else:
+                self.vector_store = Chroma(
+                    persist_directory=self.db_path,
+                    embedding_function=self.embeddings
+                )
     
     def ingest_pdf(self, pdf_path: str, metadata: Optional[Dict] = None) -> int:
         """
@@ -91,6 +99,8 @@ class LiteratureRAG:
         Returns:
             Number of chunks ingested
         """
+        self._ensure_initialized()
+        
         if not os.path.exists(pdf_path):
             logger.error(f"PDF file not found: {pdf_path}")
             return 0
@@ -158,6 +168,8 @@ class LiteratureRAG:
         Returns:
             List of retrieved documents
         """
+        self._ensure_initialized()
+        
         if self.vector_store._collection.count() == 0:
             logger.warning("Vector store is empty, no documents to search")
             return []
@@ -186,21 +198,41 @@ class LiteratureRAG:
         Returns:
             Answer with retrieved context
         """
-        if self.llm is None:
+        self._ensure_initialized()
+        
+        if self.client is None:
             logger.error("LLM not initialized, cannot answer question")
             return {
                 'answer': "Error: LLM not configured. Please provide OpenAI API key.",
                 'retrieved': self.search(question, top_k)
             }
         
-        qa_chain = RetrievalQA.from_chain_type(
-            llm=self.llm,
-            chain_type="stuff",
-            retriever=self.vector_store.as_retriever(search_kwargs={'k': top_k})
+        retrieved = self.search(question, top_k)
+        
+        # Build context from retrieved documents
+        context = "\n\n".join([f"--- Document: {r.source} ---\n{r.content}" for r in retrieved])
+        
+        # Build prompt
+        prompt = f"""Answer the question based on the context provided below.
+
+Question: {question}
+
+Context:
+{context}
+
+Answer:"""
+        
+        # Call OpenAI
+        response = self.client.chat.completions.create(
+            model=self.openai_model,
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that answers questions based on the provided context."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0
         )
         
-        answer = qa_chain.run(question)
-        retrieved = self.search(question, top_k)
+        answer = response.choices[0].message.content.strip()
         
         return {
             'answer': answer,
@@ -216,6 +248,8 @@ class LiteratureRAG:
     
     def delete_document(self, source: str) -> bool:
         """Delete a document from vector store by source"""
+        self._ensure_initialized()
+        
         # Chroma doesn't support direct deletion by metadata easily
         # This is a simplified implementation
         try:
@@ -229,6 +263,8 @@ class LiteratureRAG:
     
     def get_statistics(self) -> Dict[str, Any]:
         """Get statistics about the RAG collection"""
+        self._ensure_initialized()
+        
         return {
             'total_documents': self.vector_store._collection.count(),
             'db_path': self.db_path,
