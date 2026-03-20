@@ -16,15 +16,22 @@
 </p>
 
 <p align="center">
-  <a href="./README_CN.md">中文 README</a> | 
-  <a href="https://drug.openclaw.ai">Live Demo</a> |
-  <a href="#quick-start">Quick Start</a> |
-  <a href="#-skill-tree">Skill Tree</a>
+  <a href="./README_CN.md">中文 README</a>
 </p>
 
 ---
 
-DrugClaw is an OpenClaw-native drug discovery automation assistant that accelerates the entire drug discovery workflow from literature analysis to experimental design. It combines tool use, domain skills, and agentic automation to help researchers get things done faster.
+# 🎯 What makes DrugClaw different
+
+**DrugClaw is an OpenClaw-native full-stack drug discovery assistant. Just talk to it like you talk to me - it does the work for you.**
+
+✅ **Completely conversational** - No scripting, no command-line fighting, just tell it what target you're interested in, it plans and executes step-by-step  
+✅ **Full pipeline from literature to candidate molecules** - From literature review to virtual screening, you get a ranked list of candidate molecules ready for experimental validation  
+✅ **15-category skill tree** - Covers drug-target interactions, adverse reactions, drug-drug interactions, pharmacogenomics, drug repurposing, and more  
+✅ **Agentic "vibe coding"** - Each data source has a SKILL.md + example.py, the CodeAgent writes the query code for you, no need to pre-write everything  
+✅ **Three-level fallback** - Pre-written scripts → LLM code generation → skill module, always gracefully degraded  
+
+Give it a target protein that you think is associated with a disease, it will help you find candidate small molecule binders. That's it.
 
 ## 🎯 What DrugClaw Does
 
@@ -56,38 +63,6 @@ DrugClaw covers the full drug discovery pipeline with an agentic workflow:
 | **Drug Repurposing** | Identify repurposing opportunities from RepoDB, DRKG |
 | And more... | See full [skill tree](#-skill-tree) below |
 
-## 🤖 Agentic Workflow
-
-Inspired by [QSong-github/DrugClaw](https://github.com/QSong-github/DrugClaw), DrugClaw follows an agentic retrieval-execution pattern:
-
-```mermaid
-flowchart TD
-    A[User Query] --> B[Planner Agent]
-    B --> C[Analyze Query & Identify Entities]
-    C --> D[Select Relevant Skills]
-    D --> E[Code Agent]
-    E --> F[Read SKILL.md + example.py]
-    F --> G[Generate Custom Query Code]
-    G --> H[Execute Code]
-    H -- Success --> I[Collect Evidence]
-    H -- Failure --> J[Fallback to retrieve.py]
-    J --> I
-    I --> K[Responder]
-    K --> L[Synthesize Answer]
-    L --> M[Graph Reasoning for Complex Queries]
-    M --> N[Final Report]
-```
-
-1. **Planner Agent** - Analyzes the query, identifies entities, selects relevant skills
-2. **Code Agent** - Reads skill documentation, writes and executes resource-specific query code ("vibe coding")
-3. **Fallback Mechanism** - If code generation fails, falls back to pre-written deterministic retrieval scripts
-4. **Reasoning & Synthesis** - Aggregates evidence from multiple sources and generates a structured report
-
-Three thinking modes:
-- **SIMPLE** - Direct retrieval and answer for simple queries
-- **GRAPH** - Graph-based multi-hop evidence synthesis for complex queries
-- **WEB_ONLY** - Use only web search for recent information
-
 ## 🗺️ Skill Tree (15 Categories)
 
 | Category | Description | Data Sources |
@@ -118,8 +93,6 @@ Three thinking modes:
 - **AutoDock Vina** - Virtual screening
 - **LangChain** - RAG and agent orchestration
 - **OpenAI API** - LLM for code generation and reasoning
-- **Supabase** - Cloud database (optional)
-- **Flask** - Web UI
 
 ## 📦 Installation
 
@@ -214,14 +187,12 @@ drugclaw run --query "Which approved drugs can be repurposed for triple-negative
 
 ### As OpenClaw Skill
 
+**The best experience - just install and chat!**
+
 In OpenClaw chat, just ask naturally:
 ```
 Find all known targets of imatinib and summarize potential adverse interactions
 ```
-
-## ☁️ Web Deployment
-
-DrugClaw can be deployed to Vercel with Supabase backend. See [DEPLOYMENT_VERCEL_SUPABASE.md](https://github.com/caroline-li-bot/DrugClaw/blob/main/DEPLOYMENT_VERCEL_SUPABASE.md) for step-by-step instructions.
 
 ## 📁 Project Structure
 
@@ -235,6 +206,9 @@ DrugClaw/
 │   │   └── responder.py         # Final answer synthesizer
 │   ├── cli.py                   # Command-line interface
 │   ├── config.py                # Configuration handling
+│   ├── kg/                      # Knowledge graph builder and reasoner
+│   ├── rag/                     # Literature RAG system
+│   ├── virtual_screening/       # Parallel virtual screening with AutoDock Vina
 │   └── main_system.py           # Main system entrypoint
 ├── skills/                      # 15-category skill tree
 │   ├── dti/                     # Drug-Target Interactions
@@ -257,17 +231,11 @@ DrugClaw/
 │   ├── chem_utils.py            # Cheminformatics tools
 │   ├── db_utils.py              # Database utilities
 │   ├── ml_utils.py              # ML models
-│   ├── sota_models.py           # SOTA models (ChemBERTa, ESMFold, DiffDock)
-│   └── supabase_utils.py        # Supabase integration (optional)
-├── web/                         # Web interface
-│   ├── app.py                   # Flask backend
-│   ├── templates/               # HTML templates
-│   └── static/                  # CSS/JS assets
-├── supabase/                    # Supabase configuration
-│   └── migrations/              # Database migrations
+│   └── sota_models.py           # SOTA models (ChemBERTa, ESMFold, DiffDock)
 ├── examples/                    # Example usage scripts
 ├── docs/                        # Documentation
 ├── support/                     # Project assets (logo, images)
+├── scripts/                     # Installation and data download scripts
 ├── requirements.txt             # Python dependencies
 ├── pyproject.toml               # Package configuration
 ├── skill.yaml                   # OpenClaw skill manifest
@@ -279,9 +247,9 @@ DrugClaw/
 | Aspect | [DrugClaw/DrugClaw](https://github.com/DrugClaw/DrugClaw) | [QSong-github/DrugClaw](https://github.com/QSong-github/DrugClaw) | **caroline-li-bot/DrugClaw** |
 |--------|-------------------|------------------------|-------------------|
 | **Base** | Rust agent runtime | LangGraph Agentic RAG | **OpenClaw-native skill** |
-| **Scope** | Full research workflow automation | Drug knowledge QA | **Full-stack drug discovery automation + agentic RAG** |
-| **Philosophy** | Generic agent with drug skills | Specialized RAG for drug questions | **Best of both: OpenClaw agent + 15-category skill tree + agentic workflow** |
-| **Key Feature** | Multi-channel support, persistent memory | Structured skill tree, vibe coding retrieval | OpenClaw integration, optional cloud deployment |
+| **Scope** | Full research workflow automation | Drug knowledge QA | **Full-stack drug discovery - from literature to candidate molecules** |
+| **User Experience** | Standalone service | CLI / API | **Completely conversational** - you talk, it does the work |
+| **Philosophy** | Generic agent with drug skills | Structured skill tree, vibe coding retrieval | **OpenClaw agent + 15-category skill tree + vibe coding + full pipeline to virtual screening** |
 
 ## 📊 Example Queries
 
